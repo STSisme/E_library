@@ -1,6 +1,6 @@
 using Elibrary.Services.Interface;
 
-namespace Microsoft.Services
+namespace Elibrary.Services
 {
     public class UserServices { }
 }
