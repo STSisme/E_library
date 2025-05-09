@@ -1,6 +1,0 @@
-@Elibrary_HostAddress = http://localhost:5239
-
-GET {{Elibrary_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

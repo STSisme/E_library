@@ -1,12 +1,10 @@
-using Elibrary.Dtos;
+using E_Library.Dtos;
 
-namespace Elibrary.Services.Interface
+namespace E_Library.Services.Interface
 {
-
     public interface IUserService
     {
-
         void AddUser(InsertUserDto userDto);
-    }
 
+    }
 }
