@@ -1,4 +1,4 @@
-﻿namespace Elibrary.Dtos
+﻿namespace E_Library.Dtos
 {
     public class InsertReviewDto
     {

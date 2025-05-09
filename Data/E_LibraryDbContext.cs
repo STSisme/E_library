@@ -1,9 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Elibrary.Model;
-using Microsoft.AspNetCore.Mvc.ViewEngines;
-using System.Collections.Generic;
+using E_Library.Model;
 
-namespace Elibrary.Data
+namespace E_Library.Data
 {
     public class E_LibraryDbContext :DbContext
     {

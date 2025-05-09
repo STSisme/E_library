@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Elibrary.Model
+namespace E_Library.Model
 {
     [Table("Wishlist")]
     public class Wishlist
