@@ -3,12 +3,8 @@ using E_Library.Model;
 
 namespace E_Library.Data
 {
-    public class E_LibraryDbContext :DbContext
+    public class E_LibraryDbContext(DbContextOptions<E_LibraryDbContext> options) : DbContext(options)
     {
-        public E_LibraryDbContext(DbContextOptions<E_LibraryDbContext> options) : base(options)
-        {
-        }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<Review> Reviews { get; set; }
