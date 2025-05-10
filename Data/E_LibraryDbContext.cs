@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using E_Library.Model;
+using E_Library.Entities;
 
 namespace E_Library.Data
 {
@@ -17,6 +18,7 @@ namespace E_Library.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<Announcement> Announcements { get; set; }
+        public DbSet<E_Library.Entities.Inventory> Inventory { get; set; } = default!;
 
 
     }

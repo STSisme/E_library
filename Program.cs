@@ -33,7 +33,14 @@ app.UseRouting();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}"
+    
+
 );
+app.MapControllerRoute(
+    name: "Admin",
+    pattern: "{controller=InventoriesController}/{action=Index}"
+    );
+
 
 app.UseHttpsRedirection();
 
