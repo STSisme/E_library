@@ -3,6 +3,7 @@ using E_Library.Dtos;
 using E_Library.Model;
 using Microsoft.EntityFrameworkCore;
 using E_Library.Services.Interface;
+using E_Library.Entities;
 
 namespace E_Library.Services
 {
@@ -45,14 +46,5 @@ namespace E_Library.Services
             throw new NotImplementedException();
         }
 
-        public Task<Book> GetBookByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Review> GetReviewsForBook(int bookId)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

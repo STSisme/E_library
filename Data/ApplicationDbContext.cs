@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using E_Library.Model;
+using E_Library.Entities;
 
 namespace E_Library.Data
 {

@@ -1,4 +1,5 @@
 ﻿using E_Library.Dtos;
+using E_Library.Entities;
 using E_Library.Model;
 
 namespace E_Library.Services.Interface
@@ -14,10 +15,11 @@ namespace E_Library.Services.Interface
         int GetTotalBookCount();
 
         // Retrieves a book by its ID
-        Task<Book> GetBookByIdAsync(int id);
+        Task<Book> GetBookByIdAsync(Guid id); 
 
         // Retrieves reviews for a specific book
-        IEnumerable<Review> GetReviewsForBook(int bookId);
+        IEnumerable<Review> GetReviewsForBook(Guid bookId); 
+
 
     }
 }

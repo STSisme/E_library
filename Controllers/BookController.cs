@@ -38,7 +38,7 @@ public class BooksController : Controller
     }
 
     // GET: /Books/Details/{id}
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Details(Guid id) 
     {
         var book = await _bookService.GetBookByIdAsync(id);
         if (book == null)

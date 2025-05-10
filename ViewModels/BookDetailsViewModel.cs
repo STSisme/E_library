@@ -1,4 +1,5 @@
-﻿using E_Library.Model;
+﻿using E_Library.Entities;
+using E_Library.Model;
 
 namespace E_Library.ViewModels  
 {
