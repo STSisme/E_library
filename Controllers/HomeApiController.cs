@@ -8,12 +8,12 @@ using E_Library.Dtos;
 namespace E_Library.Controllers
 {
     [ApiController]
-    [Route("api/home")]
+    [Route("api/homeapi")]
     public class HomeApiController : ControllerBase
     {
-        private readonly E_LibraryDbContext _context;
+        private readonly ApplicationDbContext _context;
 
-        public HomeApiController(E_LibraryDbContext context)
+        public HomeApiController(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -31,9 +31,7 @@ namespace E_Library.Controllers
         public IActionResult AddUser([FromBody] InsertUserDto userDto)
         {
             if (string.IsNullOrWhiteSpace(userDto.Username) || string.IsNullOrWhiteSpace(userDto.Password))
-            {
                 return BadRequest("Username and Password are required.");
-            }
 
             var user = new User
             {

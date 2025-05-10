@@ -17,6 +17,8 @@ namespace E_Library.Model
 
         public Guid Membership_Id { get; set; } = Guid.NewGuid();
 
+        public string Role { get; set; }
+
         public string Total_Order { get; set; }
 
         public bool IsActive { get; set; } = true;

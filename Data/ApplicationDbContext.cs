@@ -3,7 +3,7 @@ using E_Library.Model;
 
 namespace E_Library.Data
 {
-    public class E_LibraryDbContext(DbContextOptions<E_LibraryDbContext> options) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
     {
         public DbSet<User> Users { get; set; }
         public DbSet<Book> Books { get; set; }

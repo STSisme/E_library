@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace E_Library.Migrations
 {
-    [DbContext(typeof(E_LibraryDbContext))]
+    [DbContext(typeof(ApplicationDbContext))]
     [Migration("20250509045309_InitialSetup")]
     partial class InitialSetup
     {

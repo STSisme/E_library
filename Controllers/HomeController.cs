@@ -1,5 +1,4 @@
-﻿using E_Library.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace E_Library.Controllers
 {
@@ -7,8 +6,9 @@ namespace E_Library.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return View(); 
         }
     }
+
 }
 

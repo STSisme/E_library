@@ -1,0 +1,52 @@
+﻿@model E_Library.ViewModels.BookDetailsViewModel
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Book.Title;
+}
+
+<div class="container">
+    <h2>@Model.Book.Title</h2>
+    <p><strong>Description:</strong> @Model.Book.Description</p>
+    <p><strong>Author:</strong> @Model.Book.Author</p>
+    <p><strong>Category:</strong> @Model.Book.Category</p>
+    <p><strong>Published Date:</strong> @Model.Book.PublishedDate.ToString("MMMM dd, yyyy")</p>
+
+    <h3>Reviews</h3>
+    @if (Model.Reviews.Any())
+    {
+        <div class="reviews">
+            @foreach (var review in Model.Reviews)
+            {
+                <div class="review-card mb-3">
+                    <p><strong>@review.User_Id</strong> - @review.Rating/5</p>
+                    <p>@review.Comment</p>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p>No reviews yet for this book.</p>
+    }
+
+    <a href="@Url.Action("Index", "Books")" class="btn btn-secondary mt-3">Back to Books</a>
+</div>
+
+
+<style>
+    .review-card {
+        border: 1px solid #ddd;
+        padding: 15px;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+
+    .reviews {
+        margin-top: 20px;
+    }
+
+    .btn {
+        font-weight: bold;
+    }
+</style>
