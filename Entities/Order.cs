@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using E_Library.Entities;
 
 namespace E_Library.Model
 {
@@ -9,16 +10,19 @@ namespace E_Library.Model
         [Key]
         public Guid Order_Id { get; set; } = Guid.NewGuid();
 
-        public Guid User_Id { get; set; }
+        [Required]
+        public string User_Id { get; set; }  // Use string for User_Id to match ApplicationUser.Id
+
+        [ForeignKey("User_Id")]
+        public ApplicationUser User { get; set; }
 
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+
         public decimal TotalAmount { get; set; }
 
         public string Status { get; set; }
 
         // Navigation
-        public User User { get; set; }
         public ICollection<OrderItem> OrderItems { get; set; }
     }
-
 }

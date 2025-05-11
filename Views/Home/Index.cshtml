@@ -8,7 +8,7 @@
         <div class="hero-content">
             <h1>Welcome to the E-Library</h1>
             <p>Explore a world of books, order your favorites, and engage with reviews from fellow readers!</p>
-            <a href="/Books" class="btn btn-primary">Explore Books</a>
+            <a href="/Books/index" class="btn btn-primary">Explore Books</a>
         </div>
     </div>
 
@@ -126,6 +126,7 @@
 
         .feature-card {
             background-color: white;
+            color: black;
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -179,33 +180,7 @@
             width: 100%; /* Full width for smaller devices */
         }
 
-        
-    </style>
-}
 
-
-@section Scripts {
-    <script>
-        // Simple Scroll Animation
-        window.addEventListener('scroll', function () {
-            let elements = document.querySelectorAll('.feature-card, .testimonial');
-            elements.forEach(function (element) {
-                let position = element.getBoundingClientRect().top;
-                if (position < window.innerHeight) {
-                    element.classList.add('fade-in');
-                }
-            });
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            let elements = document.querySelectorAll('.feature-card, .testimonial');
-            elements.forEach(function (element) {
-                element.classList.add('hidden');
-            });
-        });
-    </script>
-
-    <style>
         .fade-in {
             opacity: 1;
             transform: translateY(0);

@@ -16,29 +16,33 @@ public class BooksController : Controller
     }
 
     // GET: /Books
-    public IActionResult Index(int page = 1)
+    public IActionResult Index(string searchQuery, string sortOrder, string genreFilter, int page = 1)
     {
         const int pageSize = 10;
 
-        // Get paginated books
-        var books = _bookService.GetBooks(page, pageSize);
-
-        // Get total count
-        var totalBooks = _bookService.GetTotalBookCount();
+        var books = _bookService.GetBooks(page, pageSize, searchQuery, sortOrder, genreFilter);
+        var totalBooks = _bookService.GetFilteredBookCount(searchQuery, genreFilter);
         var totalPages = (int)Math.Ceiling(totalBooks / (double)pageSize);
+
+        var genres = _bookService.GetAllGenres(); // Populate filter dropdown
 
         var model = new BookListViewModel
         {
             Books = books,
             TotalPages = totalPages,
-            CurrentPage = page
+            CurrentPage = page,
+            SearchQuery = searchQuery,
+            SortOrder = sortOrder,
+            GenreFilter = genreFilter,
+            Genres = genres
         };
 
         return View(model);
     }
 
+
     // GET: /Books/Details/{id}
-    public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Details(Guid id) 
     {
         var book = await _bookService.GetBookByIdAsync(id);
         if (book == null)
