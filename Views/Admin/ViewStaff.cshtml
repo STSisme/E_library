@@ -1,0 +1,35 @@
+﻿@model IEnumerable<E_Library.Model.ApplicationUser>
+
+@{
+    ViewData["Title"] = "Staff List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>👥 Registered Staff Members</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">No staff members found.</div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var staff in Model)
+            {
+                <tr>
+                    <td>@staff.UserName</td>
+                    <td>@staff.Email</td>
+                    <td>@(staff.IsActive ? "✅" : "❌")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

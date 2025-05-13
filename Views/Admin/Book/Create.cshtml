@@ -1,0 +1,70 @@
+﻿@model E_Library.Model.Book
+
+@{
+    ViewData["Title"] = "➕ Add Book";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (TempData["Message"] != null)
+{
+    var isSuccess = TempData["Message"].ToString().StartsWith("✅");
+    <div class="alert @(isSuccess ? "alert-success" : "alert-danger") alert-dismissible fade show" role="alert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+
+<h2 class="mb-4">➕ Add New Book</h2>
+
+<form method="post" action="/Admin/Book/Create">
+    @Html.AntiForgeryToken()
+
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input name="Title" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Author</label>
+        <input name="Author" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Genre</label>
+        <input name="Genre" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Category</label>
+        <input name="Category" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Description</label>
+        <textarea name="Description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Price ($)</label>
+        <input type="number" step="0.01" name="Price" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Stock</label>
+        <input type="number" name="Stock" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Image URL</label>
+        <input name="ImageUrl" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Published Date</label>
+        <input type="date" name="PublishedDate" class="form-control" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">💾 Save Book</button>
+    <a href="/Admin/Book/Index" class="btn btn-secondary ms-2">Cancel</a>
+</form>

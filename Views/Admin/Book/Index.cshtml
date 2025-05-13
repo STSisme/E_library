@@ -1,0 +1,59 @@
+﻿@model List<E_Library.Model.Book>
+@{
+    ViewData["Title"] = "📚 Book Catalogue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="my-3">📚 Book Catalogue</h2>
+
+<a href="/Admin/Book/Create" class="btn btn-success mb-3">➕ Add New Book</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Genre</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+            <tr>
+                <td>@book.Title</td>
+                <td>@book.Author</td>
+                <td>@book.Genre</td>
+                <td>@book.Price.ToString("C")</td>
+                <td>@book.Inventory?.Stock</td>
+                <td>
+                    <a href="/Admin/Book/Edit/@book.Book_Id" class="btn btn-warning">Edit</a>
+                    <form method="post" action="/Admin/Book/Delete">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="id" value="@book.Book_Id" />
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@if (ViewBag.TotalPages > 1)
+{
+    <nav aria-label="Book pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+
+            @for (int i = 1; i <= (int)ViewBag.TotalPages; i++)
+            {
+                <li class="page-item @(i == (int)ViewBag.CurrentPage ? "active" : "")">
+                    <a class="page-link" href="/Admin/Book/Index?page=@i">@i</a>
+                </li>
+            }
+
+        </ul>
+    </nav>
+}
+
