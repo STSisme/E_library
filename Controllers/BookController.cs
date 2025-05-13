@@ -5,17 +5,26 @@ using System.Linq;
 using System.Threading.Tasks;
 using E_Library.Services.Interface;
 using E_Library.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using E_Library.Data;
 
 public class BooksController : Controller
 {
     private readonly IBookService _bookService;
+    private readonly ApplicationDbContext _context;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public BooksController(IBookService bookService)
+    public BooksController(
+        IBookService bookService,
+        ApplicationDbContext context,
+        UserManager<ApplicationUser> userManager)
     {
         _bookService = bookService;
+        _context = context;
+        _userManager = userManager;
     }
 
-    // GET: /Books
     public IActionResult Index(string searchQuery, string sortOrder, string genreFilter, int page = 1)
     {
         const int pageSize = 10;
@@ -24,7 +33,7 @@ public class BooksController : Controller
         var totalBooks = _bookService.GetFilteredBookCount(searchQuery, genreFilter);
         var totalPages = (int)Math.Ceiling(totalBooks / (double)pageSize);
 
-        var genres = _bookService.GetAllGenres(); // Populate filter dropdown
+        var genres = _bookService.GetAllGenres();
 
         var model = new BookListViewModel
         {
@@ -40,23 +49,31 @@ public class BooksController : Controller
         return View(model);
     }
 
-
-    // GET: /Books/Details/{id}
-    public async Task<IActionResult> Details(Guid id) 
+    public async Task<IActionResult> Details(Guid id)
     {
-        var book = await _bookService.GetBookByIdAsync(id);
-        if (book == null)
-        {
-            return NotFound();
-        }
+        var book = await _context.Books.FindAsync(id);
+        if (book == null) return NotFound();
 
-        var reviews = _bookService.GetReviewsForBook(id);
+        var reviews = await _context.Reviews
+            .Where(r => r.Book_Id == id)
+            .ToListAsync();
 
         var model = new BookDetailsViewModel
         {
             Book = book,
             Reviews = reviews
         };
+
+        if (User.Identity.IsAuthenticated)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            ViewBag.IsWishlisted = await _context.Wishlists
+                .AnyAsync(w => w.Book_Id == id && w.User_Id == user.Id);
+        }
+        else
+        {
+            ViewBag.IsWishlisted = false;
+        }
 
         return View(model);
     }

@@ -50,11 +50,6 @@
                         <h5 class="card-title">@book.Title</h5>
                         <p class="card-text">@book.Description</p>
                         <a href="@Url.Action("Details", "Books", new { id = book.Book_Id })" class="btn btn-primary">View Details</a>
-
-                        <form asp-controller="Wishlist" asp-action="Add" method="post" class="mt-2">
-                            <input type="hidden" name="bookId" value="@book.Book_Id" />
-                            <button type="submit" class="btn btn-outline-primary btn-sm">Add to Wishlist</button>
-                        </form>
                     </div>
                 </div>
             </div>

@@ -2,15 +2,14 @@
 
 namespace E_Library.Dtos
 {
-    public class InsertUserDto
+    public class LoginUserDto
     {
-        [Required]
-        public string Username { get; set; }
-
         [Required, EmailAddress]
         public string Email { get; set; }
 
-        [Required, MinLength(6)]
+        [Required]
         public string Password { get; set; }
+
+        public bool RememberMe { get; set; }
     }
 }

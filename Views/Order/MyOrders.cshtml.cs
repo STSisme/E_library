@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace E_Library.Views.Wishlist
+namespace E_Library.Views.Order
 {
-    public class IndexModel : PageModel
+    public class MyOrdersModel : PageModel
     {
         public void OnGet()
         {

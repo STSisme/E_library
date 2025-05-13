@@ -1,0 +1,59 @@
+﻿@model List<E_Library.Model.Order>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "My Orders";
+}
+
+<h2>📦 My Orders</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">You have no orders yet.</div>
+}
+else
+{
+    foreach (var order in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-header">
+                <strong>Order #: </strong> @order.Order_Id
+                <span class="float-end">📅 @order.OrderDate.ToString("yyyy-MM-dd HH:mm")</span>
+            </div>
+            <div class="card-body">
+                <p><strong>Status:</strong> @order.Status</p>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Book</th>
+                            <th>Qty</th>
+                            <th>Unit Price</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in order.OrderItems)
+                        {
+                            <tr>
+                                <td>@item.Book.Title</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.UnitPrice.ToString("C")</td>
+                                <td>@(item.Quantity * item.UnitPrice).ToString("C")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <p><strong>Total: </strong> @order.TotalAmount.ToString("C")</p>
+
+                @if (order.Status == "Pending")
+                {
+                    <form action="/Order/Cancel" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="orderId" value="@order.Order_Id" />
+                        <button type="submit" class="btn btn-danger">Cancel Order</button>
+                    </form>
+                }
+            </div>
+        </div>
+    }
+}
