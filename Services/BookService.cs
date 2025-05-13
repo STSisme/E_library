@@ -2,7 +2,6 @@ using E_Library.Data;
 using E_Library.Dtos;
 using E_Library.Model;
 using E_Library.Services.Interface;
-using E_Library.Entities;
 using Microsoft.EntityFrameworkCore;
 
 

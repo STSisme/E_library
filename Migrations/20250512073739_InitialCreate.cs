@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace E_Library.Migrations
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -46,10 +46,9 @@ namespace E_Library.Migrations
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
                     Username = table.Column<string>(type: "text", nullable: false),
-                    Password = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: false),
                     Role = table.Column<string>(type: "text", nullable: false),
-                    Total_Order = table.Column<string>(type: "text", nullable: false),
+                    TotalOrder = table.Column<string>(type: "text", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -222,20 +221,20 @@ namespace E_Library.Migrations
                 name: "Cart",
                 columns: table => new
                 {
-                    Cart_Id = table.Column<Guid>(type: "uuid", nullable: false),
                     User_Id = table.Column<string>(type: "text", nullable: false),
                     Book_Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: true),
+                    Cart_Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Cart", x => x.Cart_Id);
+                    table.PrimaryKey("PK_Cart", x => new { x.User_Id, x.Book_Id });
                     table.ForeignKey(
-                        name: "FK_Cart_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Cart_AspNetUsers_User_Id",
+                        column: x => x.User_Id,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Cart_Book_Book_Id",
                         column: x => x.Book_Id,
@@ -297,15 +296,14 @@ namespace E_Library.Migrations
                     Wishlist_Id = table.Column<Guid>(type: "uuid", nullable: false),
                     User_Id = table.Column<string>(type: "text", nullable: false),
                     Book_Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserId = table.Column<string>(type: "text", nullable: false)
+                    AddedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Wishlist", x => x.Wishlist_Id);
                     table.ForeignKey(
-                        name: "FK_Wishlist_AspNetUsers_UserId",
-                        column: x => x.UserId,
+                        name: "FK_Wishlist_AspNetUsers_User_Id",
+                        column: x => x.User_Id,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -321,26 +319,24 @@ namespace E_Library.Migrations
                 name: "OrderItem",
                 columns: table => new
                 {
-                    OrderItem_Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Order_Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Book_Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    OrderItem_Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Quantity = table.Column<int>(type: "integer", nullable: false),
-                    UnitPrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    Order_Id1 = table.Column<Guid>(type: "uuid", nullable: false),
-                    Book_Id1 = table.Column<Guid>(type: "uuid", nullable: false)
+                    UnitPrice = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_OrderItem", x => x.OrderItem_Id);
+                    table.PrimaryKey("PK_OrderItem", x => new { x.Order_Id, x.Book_Id });
                     table.ForeignKey(
-                        name: "FK_OrderItem_Book_Book_Id1",
-                        column: x => x.Book_Id1,
+                        name: "FK_OrderItem_Book_Book_Id",
+                        column: x => x.Book_Id,
                         principalTable: "Book",
                         principalColumn: "Book_Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_OrderItem_Order_Order_Id1",
-                        column: x => x.Order_Id1,
+                        name: "FK_OrderItem_Order_Order_Id",
+                        column: x => x.Order_Id,
                         principalTable: "Order",
                         principalColumn: "Order_Id",
                         onDelete: ReferentialAction.Cascade);
@@ -389,24 +385,14 @@ namespace E_Library.Migrations
                 column: "Book_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Cart_UserId",
-                table: "Cart",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Order_User_Id",
                 table: "Order",
                 column: "User_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_Book_Id1",
+                name: "IX_OrderItem_Book_Id",
                 table: "OrderItem",
-                column: "Book_Id1");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_OrderItem_Order_Id1",
-                table: "OrderItem",
-                column: "Order_Id1");
+                column: "Book_Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Review_Book_Id",
@@ -424,9 +410,9 @@ namespace E_Library.Migrations
                 column: "Book_Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Wishlist_UserId",
+                name: "IX_Wishlist_User_Id",
                 table: "Wishlist",
-                column: "UserId");
+                column: "User_Id");
         }
 
         /// <inheritdoc />

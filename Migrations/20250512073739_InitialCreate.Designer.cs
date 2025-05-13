@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace E_Library.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250511023527_initial")]
-    partial class initial
+    [Migration("20250512073739_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,29 @@ namespace E_Library.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("E_Library.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("E_Library.Model.Announcement", b =>
+                {
+                    b.Property<Guid>("Announcement_Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Message")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("PublishedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Announcement_Id");
+
+                    b.ToTable("Announcement");
+                });
+
+            modelBuilder.Entity("E_Library.Model.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -62,10 +84,6 @@ namespace E_Library.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
@@ -82,7 +100,7 @@ namespace E_Library.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
-                    b.Property<string>("Total_Order")
+                    b.Property<string>("TotalOrder")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -107,41 +125,6 @@ namespace E_Library.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("E_Library.Entities.Inventory", b =>
-                {
-                    b.Property<Guid>("Book_Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Stock")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Book_Id");
-
-                    b.ToTable("Inventory");
-                });
-
-            modelBuilder.Entity("E_Library.Model.Announcement", b =>
-                {
-                    b.Property<Guid>("Announcement_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("PublishedDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Announcement_Id");
-
-                    b.ToTable("Announcement");
                 });
 
             modelBuilder.Entity("E_Library.Model.Book", b =>
@@ -193,30 +176,36 @@ namespace E_Library.Migrations
 
             modelBuilder.Entity("E_Library.Model.Cart", b =>
                 {
-                    b.Property<Guid>("Cart_Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("User_Id")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("Book_Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("Cart_Id")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("integer");
 
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("User_Id")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Cart_Id");
+                    b.HasKey("User_Id", "Book_Id");
 
                     b.HasIndex("Book_Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Cart");
+                });
+
+            modelBuilder.Entity("E_Library.Model.Inventory", b =>
+                {
+                    b.Property<Guid>("Book_Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Stock")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Book_Id");
+
+                    b.ToTable("Inventory");
                 });
 
             modelBuilder.Entity("E_Library.Model.Order", b =>
@@ -248,20 +237,13 @@ namespace E_Library.Migrations
 
             modelBuilder.Entity("E_Library.Model.OrderItem", b =>
                 {
-                    b.Property<Guid>("OrderItem_Id")
-                        .ValueGeneratedOnAdd()
+                    b.Property<Guid>("Order_Id")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("Book_Id")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("Book_Id1")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("Order_Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("Order_Id1")
+                    b.Property<Guid>("OrderItem_Id")
                         .HasColumnType("uuid");
 
                     b.Property<int>("Quantity")
@@ -270,11 +252,9 @@ namespace E_Library.Migrations
                     b.Property<decimal>("UnitPrice")
                         .HasColumnType("numeric");
 
-                    b.HasKey("OrderItem_Id");
+                    b.HasKey("Order_Id", "Book_Id");
 
-                    b.HasIndex("Book_Id1");
-
-                    b.HasIndex("Order_Id1");
+                    b.HasIndex("Book_Id");
 
                     b.ToTable("OrderItem");
                 });
@@ -323,10 +303,6 @@ namespace E_Library.Migrations
                     b.Property<Guid>("Book_Id")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<string>("User_Id")
                         .IsRequired()
                         .HasColumnType("text");
@@ -335,7 +311,7 @@ namespace E_Library.Migrations
 
                     b.HasIndex("Book_Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("User_Id");
 
                     b.ToTable("Wishlist");
                 });
@@ -472,7 +448,26 @@ namespace E_Library.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("E_Library.Entities.Inventory", b =>
+            modelBuilder.Entity("E_Library.Model.Cart", b =>
+                {
+                    b.HasOne("E_Library.Model.Book", "Book")
+                        .WithMany("Carts")
+                        .HasForeignKey("Book_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("E_Library.Model.ApplicationUser", "User")
+                        .WithMany("Carts")
+                        .HasForeignKey("User_Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("E_Library.Model.Inventory", b =>
                 {
                     b.HasOne("E_Library.Model.Book", "Book")
                         .WithMany()
@@ -483,26 +478,9 @@ namespace E_Library.Migrations
                     b.Navigation("Book");
                 });
 
-            modelBuilder.Entity("E_Library.Model.Cart", b =>
-                {
-                    b.HasOne("E_Library.Model.Book", "Book")
-                        .WithMany("Carts")
-                        .HasForeignKey("Book_Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("E_Library.Entities.ApplicationUser", "User")
-                        .WithMany("Carts")
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Book");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("E_Library.Model.Order", b =>
                 {
-                    b.HasOne("E_Library.Entities.ApplicationUser", "User")
+                    b.HasOne("E_Library.Model.ApplicationUser", "User")
                         .WithMany("Orders")
                         .HasForeignKey("User_Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -515,13 +493,13 @@ namespace E_Library.Migrations
                 {
                     b.HasOne("E_Library.Model.Book", "Book")
                         .WithMany("OrderItems")
-                        .HasForeignKey("Book_Id1")
+                        .HasForeignKey("Book_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("E_Library.Model.Order", "Order")
                         .WithMany("OrderItems")
-                        .HasForeignKey("Order_Id1")
+                        .HasForeignKey("Order_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -538,7 +516,7 @@ namespace E_Library.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("E_Library.Entities.ApplicationUser", "User")
+                    b.HasOne("E_Library.Model.ApplicationUser", "User")
                         .WithMany("Reviews")
                         .HasForeignKey("User_Id")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -557,9 +535,9 @@ namespace E_Library.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("E_Library.Entities.ApplicationUser", "User")
+                    b.HasOne("E_Library.Model.ApplicationUser", "User")
                         .WithMany("Wishlists")
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("User_Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -579,7 +557,7 @@ namespace E_Library.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("E_Library.Entities.ApplicationUser", null)
+                    b.HasOne("E_Library.Model.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -588,7 +566,7 @@ namespace E_Library.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("E_Library.Entities.ApplicationUser", null)
+                    b.HasOne("E_Library.Model.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -603,7 +581,7 @@ namespace E_Library.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("E_Library.Entities.ApplicationUser", null)
+                    b.HasOne("E_Library.Model.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -612,14 +590,14 @@ namespace E_Library.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("E_Library.Entities.ApplicationUser", null)
+                    b.HasOne("E_Library.Model.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("E_Library.Entities.ApplicationUser", b =>
+            modelBuilder.Entity("E_Library.Model.ApplicationUser", b =>
                 {
                     b.Navigation("Carts");
 

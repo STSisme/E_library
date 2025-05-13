@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace E_Library.Views.Wishlist
 {
-    public class IndexModel : PageModel
+    public class MyWishlistModel : PageModel
     {
         public void OnGet()
         {

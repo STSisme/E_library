@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using E_Library.Data;
-using E_Library.Entities;
+using E_Library.Model;
 
 namespace E_Library.Controllers.Admin
 {

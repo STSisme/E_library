@@ -5,13 +5,65 @@
     ViewData["Title"] = Model.Book.Title;
 }
 
-<div class="container">
+@section Scripts {
+    <script>
+        window.onload = function () {
+            var message = '@TempData["Message"]';
+            if (message) {
+                alert("📢 " + message);
+            }
+        };
+    </script>
+}
+
+<div class="container mt-4">
     <h2>@Model.Book.Title</h2>
     <p><strong>Description:</strong> @Model.Book.Description</p>
     <p><strong>Author:</strong> @Model.Book.Author</p>
     <p><strong>Category:</strong> @Model.Book.Category</p>
     <p><strong>Published Date:</strong> @Model.Book.PublishedDate.ToString("MMMM dd, yyyy")</p>
 
+    @if (User.Identity.IsAuthenticated)
+    {
+        // Wishlist
+        if ((ViewBag.IsWishlisted as bool?) == true)
+        {
+            <form action="/Wishlist/Remove" method="post" class="mb-2">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="bookId" value="@Model.Book.Book_Id" />
+                <button type="submit" class="btn btn-danger">Remove from Wishlist</button>
+            </form>
+        }
+        else
+        {
+            <form action="/Wishlist/Add" method="post" class="mb-2">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="bookId" value="@Model.Book.Book_Id" />
+                <button type="submit" class="btn btn-outline-primary">Add to Wishlist</button>
+            </form>
+        }
+
+        // Cart
+        if ((ViewBag.IsInCart as bool?) == true)
+        {
+            <form action="/Cart/Remove" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="bookId" value="@Model.Book.Book_Id" />
+                <button type="submit" class="btn btn-danger">Remove from Cart</button>
+            </form>
+        }
+        else
+        {
+            <form action="/Cart/Add" method="post" class="d-inline">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="bookId" value="@Model.Book.Book_Id" />
+                <button type="submit" class="btn btn-outline-warning">🛒 Add to Cart</button>
+            </form>
+        }
+    }
+
+
+    <hr />
     <h3>Reviews</h3>
     @if (Model.Reviews.Any())
     {
@@ -33,7 +85,6 @@
     <a href="@Url.Action("Index", "Books")" class="btn btn-secondary mt-3">Back to Books</a>
 </div>
 
-
 <style>
     .review-card {
         border: 1px solid #ddd;
@@ -44,9 +95,5 @@
 
     .reviews {
         margin-top: 20px;
-    }
-
-    .btn {
-        font-weight: bold;
     }
 </style>
