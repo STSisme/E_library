@@ -1,0 +1,141 @@
+﻿@model E_Library.Dtos.InsertUserDto
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Register";
+}
+
+<style>
+    .auth-wrapper {
+        display: flex;
+        height: 100vh;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .auth-left {
+        flex: 1;
+        background: #f0f0f0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-right {
+        flex: 1;
+        padding: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .auth-form input {
+        width: 100%;
+        padding: 12px;
+        margin: 12px 0;
+        border: none;
+        background: #f5f5ff;
+        border-radius: 5px;
+        transition: border-color 0.3s ease;
+    }
+
+        .auth-form input:focus {
+            border-color: #0066cc;
+            outline: none;
+        }
+
+    .auth-form button {
+        padding: 12px;
+        width: 100%;
+        border: none;
+        margin-top: 10px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.3s ease;
+    }
+
+        .auth-form button:hover {
+            background-color: #444;
+        }
+
+    .register-btn {
+        background: black;
+        color: white;
+    }
+
+    .login-btn {
+        border: 2px solid black;
+        background: white;
+        color: black;
+    }
+
+    .alert-danger {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .auth-right a {
+        margin-top: 20px;
+        text-align: center;
+        display: block;
+    }
+
+</style>
+
+<div class="auth-wrapper">
+    <div class="auth-left">
+        <h2>📚 ELIBRARY</h2>
+    </div>
+    <div class="auth-right">
+        <h4>Welcome back!</h4>
+        <h2>Register to your account</h2>
+
+        <form asp-action="Register" method="post" class="auth-form">
+            @Html.AntiForgeryToken()
+
+            <!-- Display ModelState Errors -->
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    </ul>
+                </div>
+            }
+
+            <!-- Username Field -->
+            <div class="form-group">
+                <label for="Username">Username</label>
+                <input type="text" name="Username" id="Username" class="form-control" placeholder="Enter username" value="@Model.Username" required />
+            </div>
+
+            <!-- Email Field -->
+            <div class="form-group">
+                <label for="Email">Email</label>
+                <input type="email" name="Email" id="Email" class="form-control" placeholder="Enter email" value="@Model.Email" required />
+            </div>
+
+            <!-- Password Field -->
+            <div class="form-group">
+                <label for="Password">Password</label>
+                <input type="password" name="Password" id="Password" class="form-control" placeholder="Enter password" required />
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn register-btn">Register</button>
+        </form>
+
+        <!-- Link to Login Page -->
+        <a href="/Account/Login" class="btn login-btn w-100">Login</a>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <partial name="_ValidationSummary" />
+}

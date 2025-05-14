@@ -1,0 +1,31 @@
+﻿@model List<E_Library.Model.Inventory>
+@{
+    ViewData["Title"] = "📦 Inventory Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="mb-4">📦 Inventory List</h2>
+
+<table class="table table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Book Title</th>
+            <th>Stock</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Book.Title</td>
+                <td>@item.Stock</td>
+                <td>
+                    <a href="/Inventory/Edit/@item.Book_Id" class="btn btn-sm btn-warning">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+

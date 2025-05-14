@@ -1,0 +1,34 @@
+﻿@model IEnumerable<E_Library.Model.Wishlist>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    ViewData["Title"] = "My Wishlist";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>My Wishlist</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">You haven't added any books to your wishlist.</div>
+}
+else
+{
+    <ul class="list-group">
+        @foreach (var item in Model)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                    <strong>@item.Book.Title</strong><br />
+                    <small>Added on @item.AddedAt.ToShortDateString()</small>
+                </span>
+
+                <form action="/Wishlist/Remove" method="post" class="mb-2">
+                    <input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetTokens(Context).RequestToken" />
+                    <input type="hidden" name="bookId" value="@item.Book.Book_Id" />
+                    <button type="submit" class="btn btn-danger">Remove from Wishlist</button>
+                </form>
+            </li>
+        }
+    </ul>
+}

@@ -1,19 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using E_Library.Model;
 
-namespace E_Library.Entities
+namespace E_Library.Model
 {
     [Table("Inventory")]
     public class Inventory
     {
-        [Key, ForeignKey("Book")] // Foreign key for Book
+        [Key, ForeignKey(nameof(Book))]
         public Guid Book_Id { get; set; }
+
         public int Stock { get; set; }
 
-        // ✅ Navigation property
+        // Navigation
         public Book Book { get; set; }
-
-
     }
 }

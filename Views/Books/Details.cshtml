@@ -5,34 +5,171 @@
     ViewData["Title"] = Model.Book.Title;
 }
 
-<div class="container">
-    <h2>@Model.Book.Title</h2>
-    <p><strong>Description:</strong> @Model.Book.Description</p>
-    <p><strong>Author:</strong> @Model.Book.Author</p>
-    <p><strong>Category:</strong> @Model.Book.Category</p>
-    <p><strong>Published Date:</strong> @Model.Book.PublishedDate.ToString("MMMM dd, yyyy")</p>
+@inject Microsoft.AspNetCore.Identity.UserManager<E_Library.Model.ApplicationUser> UserManager
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
 
-    <h3>Reviews</h3>
-    @if (Model.Reviews.Any())
-    {
-        <div class="reviews">
+@{
+    var currentUserId = UserManager.GetUserId(User);  // Get the current user's ID
+}
+
+@section Scripts {
+    <script>
+        window.onload = function () {
+            var message = '@TempData["Message"]';
+            if (message) {
+                alert("📢 " + message);
+            }
+        };
+    </script>
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Left: Book Image -->
+        <div class="col-md-5 text-center mb-4">
+            <img src="@Model.Book.ImageUrl" alt="@Model.Book.Title" class="img-fluid rounded shadow" style="max-height: 400px; object-fit: contain;" />
+        </div>
+
+        <!-- Right: Book Details -->
+        <div class="col-md-7">
+            <h2>@Model.Book.Title</h2>
+            <p><strong>Description:</strong> @Model.Book.Description</p>
+            <p><strong>Author:</strong> @Model.Book.Author</p>
+            <p><strong>Category:</strong> @Model.Book.Category</p>
+            <p><strong>Published:</strong> @Model.Book.PublishedDate.ToString("MMMM dd, yyyy")</p>
+
+            @if (Model.Book.IsOnSale && Model.Book.SaleStartDate <= DateTime.UtcNow && Model.Book.SaleEndDate >= DateTime.UtcNow)
+            {
+                <span class="badge bg-success">On Sale</span>
+                <p><del>@Model.Book.Price.ToString("C")</del> <strong>@Model.Book.DiscountPrice?.ToString("C")</strong></p>
+            }
+            else
+            {
+                <p><strong>Price:</strong> @Model.Book.Price.ToString("C")</p>
+            }
+
+            @if (User.Identity.IsAuthenticated)
+            {
+                <!-- Wishlist -->
+                @if ((ViewBag.IsWishlisted as bool?) == true)
+                {
+                    <form action="/Wishlist/Remove" method="post" class="mb-2">
+                        <input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetTokens(Context).RequestToken" />
+                        <input type="hidden" name="bookId" value="@Model.Book.Book_Id" />
+                        <button type="submit" class="btn btn-danger w-100">Remove from Wishlist</button>
+                    </form>
+                }
+                else
+                {
+                    <form action="/Wishlist/Add" method="post" class="mb-2">
+                        <input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetTokens(Context).RequestToken" />
+                        <input type="hidden" name="bookId" value="@Model.Book.Book_Id" />
+                        <button type="submit" class="btn btn-outline-primary w-100">Add to Wishlist</button>
+                    </form>
+                }
+
+                <!-- Cart -->
+                @if ((ViewBag.IsInCart as bool?) == true)
+                {
+                    <form action="/Cart/Remove" method="post" class="mb-2">
+                        <input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetTokens(Context).RequestToken" />
+                        <input type="hidden" name="bookId" value="@Model.Book.Book_Id" />
+                        <button type="submit" class="btn btn-danger w-100">Remove from Cart</button>
+                    </form>
+                }
+                else
+                {
+                    <form action="/Cart/Add" method="post" class="mb-2">
+                        <input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetTokens(Context).RequestToken" />
+                        <input type="hidden" name="bookId" value="@Model.Book.Book_Id" />
+                        <button type="submit" class="btn btn-outline-warning w-100">🛒 Add to Cart</button>
+                    </form>
+                }
+            }
+
+            <a href="@Url.Action("Index", "Books")" class="btn btn-secondary w-100 mt-2">← Back to Books</a>
+        </div>
+    </div>
+
+    <hr class="my-4" />
+
+    <!-- Reviews Section -->
+    <div class="reviews">
+        <h3>Reviews</h3>
+
+        @if (Model.Reviews.Any())
+        {
             @foreach (var review in Model.Reviews)
             {
                 <div class="review-card mb-3">
-                    <p><strong>@review.User_Id</strong> - @review.Rating/5</p>
+                    <p>
+                        @if (review.User != null)
+                        {
+                            <strong>@review.User.Username</strong>
+                        }
+                        else
+                        {
+                            <strong>Anonymous</strong>
+                        }
+
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <span style="color:@(i <= review.Rating ? "gold" : "lightgray")">&#9733;</span>
+                        }
+                    </p>
+                    <small class="text-muted">
+                        Reviewed @review.CreatedAt.ToString("MMMM dd, yyyy") (@((DateTime.UtcNow - review.CreatedAt).Days) days ago)
+                    </small>
                     <p>@review.Comment</p>
+
+                    @if (User.Identity.IsAuthenticated && review.User_Id == currentUserId)
+                    {
+                        <form action="/Review/Delete" method="post">
+                            <input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetTokens(Context).RequestToken" />
+                            <input type="hidden" name="reviewId" value="@review.Review_Id" />
+                            <button type="submit" class="btn btn-sm btn-outline-danger mt-1">Delete Review</button>
+                        </form>
+                    }
                 </div>
             }
-        </div>
-    }
-    else
-    {
-        <p>No reviews yet for this book.</p>
-    }
+        }
+        else
+        {
+            <p>No reviews yet for this book.</p>
+        }
 
-    <a href="@Url.Action("Index", "Books")" class="btn btn-secondary mt-3">Back to Books</a>
+        @if (User.Identity.IsAuthenticated)
+        {
+            if ((ViewBag.HasPurchased as bool?) == true && (ViewBag.HasReviewed as bool?) == false)
+            {
+                <hr />
+                <h4>Leave a Review</h4>
+                <form action="/Review/Add" method="post">
+                    <input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetTokens(Context).RequestToken" />
+                    <input type="hidden" name="bookId" value="@Model.Book.Book_Id" />
+
+                    <div class="mb-2">
+                        <label for="Rating">Rating (1–5):</label>
+                        <input type="number" name="Rating" min="1" max="5" class="form-control" required />
+                    </div>
+                    <div class="mb-2">
+                        <label for="Comment">Comment:</label>
+                        <textarea name="Comment" class="form-control" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            }
+            else if ((ViewBag.HasReviewed as bool?) == true)
+            {
+                <p class="text-muted">You’ve already reviewed this book.</p>
+            }
+            else
+            {
+                <p class="text-muted">You must purchase this book before leaving a review.</p>
+            }
+        }
+    </div>
 </div>
-
 
 <style>
     .review-card {
@@ -43,10 +180,6 @@
     }
 
     .reviews {
-        margin-top: 20px;
-    }
-
-    .btn {
-        font-weight: bold;
+        margin-top: 30px;
     }
 </style>

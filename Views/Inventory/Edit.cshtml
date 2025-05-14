@@ -1,0 +1,29 @@
+﻿@model E_Library.Model.Inventory
+
+@{
+    ViewData["Title"] = "📦 Edit Inventory";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    @if (Model.Book != null)
+    {
+        <h2 class="mb-4">📚 Edit Inventory for: <strong>@Model.Book.Title</strong></h2>
+    }
+    else
+    {
+        <h2 class="text-danger">⚠️ Book reference is missing.</h2>
+    }
+
+    <form action="/Inventory/Edit" method="post" class="p-4 bg-light border rounded shadow-sm">
+        <input type="hidden" name="Book_Id" value="@Model.Book_Id" />
+
+        <div class="mb-3">
+            <label for="Stock" class="form-label">Current Stock</label>
+            <input type="number" name="Stock" id="Stock" value="@Model.Stock" class="form-control" required />
+        </div>
+
+        <button type="submit" class="btn btn-success">💾 Save Changes</button>
+        <a href="/Inventory" class="btn btn-outline-secondary ms-2">Cancel</a>
+    </form>
+</div>
