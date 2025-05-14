@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Process Claim";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>🔐 Process Member Claim Code</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <div class="form-group">
+        <label for="code">Enter Claim Code:</label>
+        <input type="text" class="form-control" id="code" name="code" required placeholder="E.g. 8-digit code" />
+    </div>
+    <button type="submit" class="btn btn-success mt-2">✅ Submit</button>
+</form>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-info mt-3">
+        @TempData["Message"]
+    </div>
+}

@@ -1,95 +1,114 @@
-﻿using E_Library.Data;
-using E_Library.Model;
+﻿// WishlistController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using E_Library.Data;
+using E_Library.Model;
+using Microsoft.AspNetCore.Identity;
 
-public class WishlistController : Controller
+namespace E_Library.Controllers
 {
-    private readonly ApplicationDbContext _context;
-
-    public WishlistController(ApplicationDbContext context)
+    [Authorize]
+    public class WishlistController : Controller
     {
-        _context = context;
-    }
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-    // Add to wishlist
-    [HttpPost]
-    public async Task<IActionResult> Add(Guid bookId)
-    {
-        if (!User.Identity.IsAuthenticated || User.FindFirst("UserId") == null)
+        public WishlistController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
-            TempData["AlertMessage"] = "You must be logged in to add books to your wishlist.";
-            return RedirectToAction("Login", "User");
+            _context = context;
+            _userManager = userManager;
         }
 
-        // Assuming "UserId" is a string (for IdentityUser)
-        var userId = User.FindFirst("UserId")?.Value;
-
-        if (userId == null)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Add(Guid bookId)
         {
-            TempData["AlertMessage"] = "User ID is not available.";
-            return RedirectToAction("Login", "User");
-        }
+            Console.WriteLine("\n📥 Wishlist Add POST hit");
+            Console.WriteLine("📚 Book ID: " + bookId);
 
-        var exists = await _context.Wishlists
-            .AnyAsync(w => w.User_Id == userId && w.Book_Id == bookId);
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                Console.WriteLine("❌ User not found");
+                return Unauthorized();
+            }
 
-        if (!exists)
-        {
+            Console.WriteLine("👤 User ID: " + user.Id);
+
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null)
+            {
+                Console.WriteLine("❌ Book not found in DB: " + bookId);
+                TempData["Alert"] = "Error: Book not found.";
+                return RedirectToAction("Details", "Books", new { id = bookId });
+            }
+
+            var alreadyExists = await _context.Wishlists
+                .AnyAsync(w => w.User_Id == user.Id && w.Book_Id == bookId);
+
+            Console.WriteLine("🔁 alreadyExists = " + alreadyExists);
+
+            if (alreadyExists)
+            {
+                TempData["Alert"] = "This book is already in your wishlist.";
+                return RedirectToAction("Details", "Books", new { id = bookId });
+            }
+
             var wishlist = new Wishlist
             {
-                User_Id = userId,  // Assuming "User_Id" is stored as a string
-                Book_Id = bookId
+                Wishlist_Id = Guid.NewGuid(),
+                User_Id = user.Id,
+                Book_Id = bookId,
+                AddedAt = DateTime.UtcNow
             };
+
             _context.Wishlists.Add(wishlist);
-            await _context.SaveChangesAsync();
+            try
+            {
+                int result = await _context.SaveChangesAsync();
+                Console.WriteLine("✅ Rows affected: " + result);
+                TempData["Alert"] = "Book successfully added to your wishlist.";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("❌ DB SAVE ERROR: " + ex.Message);
+                TempData["Alert"] = "Failed to add book to wishlist.";
+            }
+
+            return RedirectToAction("Details", "Books", new { id = bookId });
         }
 
-        return RedirectToAction("Index", "Books");
-    }
-
-    // View wishlist
-    public async Task<IActionResult> Index()
-    {
-        if (!User.Identity.IsAuthenticated || User.FindFirst("UserId") == null)
+        public async Task<IActionResult> MyWishlist()
         {
-            TempData["AlertMessage"] = "Please login to view your wishlist.";
-            return RedirectToAction("Login", "User");
+            var user = await _userManager.GetUserAsync(User);
+            var items = await _context.Wishlists
+                .Include(w => w.Book)
+                .Where(w => w.User_Id == user.Id)
+                .ToListAsync();
+
+            return View(items);
         }
 
-        var userId = User.FindFirst("UserId")?.Value;
-
-        if (userId == null)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Remove(Guid bookId)
         {
-            TempData["AlertMessage"] = "User ID is not available.";
-            return RedirectToAction("Login", "User");
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return Unauthorized();
+
+            var entry = await _context.Wishlists
+                .FirstOrDefaultAsync(w => w.User_Id == user.Id && w.Book_Id == bookId);
+
+            if (entry != null)
+            {
+                _context.Wishlists.Remove(entry);
+                await _context.SaveChangesAsync();
+                TempData["Message"] = "✅ Removed from wishlist.";
+            }
+
+            return RedirectToAction("Details", "Books", new { id = bookId });
         }
 
-        var wishlistItems = await _context.Wishlists
-            .Include(w => w.Book)
-            .Where(w => w.User_Id == userId)
-            .ToListAsync();
-
-        return View(wishlistItems);
-    }
-
-
-    // Remove from wishlist
-    public async Task<IActionResult> Remove(Guid wishlistId)
-    {
-        if (!User.Identity.IsAuthenticated || User.FindFirst("UserId") == null)
-        {
-            TempData["AlertMessage"] = "You must be logged in to remove books from your wishlist.";
-            return RedirectToAction("Login", "User");
-        }
-
-        var item = await _context.Wishlists.FindAsync(wishlistId);
-        if (item != null)
-        {
-            _context.Wishlists.Remove(item);
-            await _context.SaveChangesAsync();
-        }
-
-        return RedirectToAction("Index");
     }
 }

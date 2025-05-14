@@ -1,0 +1,48 @@
+﻿@model E_Library.Dtos.InsertUserDto
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "➕ Add Staff";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5 mb-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <h2 class="text-center text-primary mb-4">👤 Register a New Staff Member</h2>
+
+            <form action="/Admin/AddStaff" method="post" class="p-4 shadow rounded bg-light">
+                <input type="hidden" name="__RequestVerificationToken" value="@Antiforgery.GetTokens(HttpContextAccessor.HttpContext).RequestToken" />
+
+                <div class="mb-3">
+                    <label for="Username" class="form-label">Username</label>
+                    <input type="text" name="Username" id="Username" class="form-control" placeholder="Enter full name or nickname" value="@Model?.Username" />
+                    <span class="text-danger small">@Html.ValidationMessage("Username")</span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Email" class="form-label">Email Address</label>
+                    <input type="email" name="Email" id="Email" class="form-control" placeholder="staff@example.com" value="@Model?.Email" />
+                    <span class="text-danger small">@Html.ValidationMessage("Email")</span>
+                </div>
+
+                <div class="mb-3">
+                    <label for="Password" class="form-label">Password</label>
+                    <input type="password" name="Password" id="Password" class="form-control" placeholder="Minimum 6 characters" />
+                    <span class="text-danger small">@Html.ValidationMessage("Password")</span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-success">✅ Create Staff</button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

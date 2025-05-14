@@ -1,0 +1,36 @@
+﻿@model List<E_Library.Model.Announcement>
+@{
+    ViewData["Title"] = "📢 Announcements";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 class="my-3">📢 Announcements</h2>
+
+<a href="/Announcement/Create" class="btn btn-primary mb-3">➕ Create New Announcement</a>
+
+@if (!Model.Any())
+{
+        <div class="alert alert-info">No announcements found.</div>
+}
+else
+{
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Message</th>
+                    <th>Published Date</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                        <tr>
+                            <td>@item.Title</td>
+                            <td>@item.Message</td>
+                            <td>@item.PublishedDate.ToString("yyyy-MM-dd HH:mm")</td>
+                        </tr>
+            }
+            </tbody>
+        </table>
+}

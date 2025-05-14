@@ -1,6 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using E_Library.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace E_Library.Model
 {
@@ -18,10 +17,11 @@ namespace E_Library.Model
 
         public DateTime AddedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation Properties
+        // Navigation
+        [ForeignKey(nameof(User_Id))]
         public ApplicationUser User { get; set; }
 
-        [ForeignKey("Book_Id")]
+        [ForeignKey(nameof(Book_Id))]
         public Book Book { get; set; }
     }
 }

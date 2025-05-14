@@ -1,0 +1,35 @@
+﻿@model IEnumerable<E_Library.Model.ClaimAuditLog>
+
+@{
+    ViewData["Title"] = "Claim Logs";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>📜 Claim Audit Logs</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning">No claims have been processed yet.</div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Claimed By</th>
+                <th>Claim Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td>@log.Order.Order_Id</td>
+                    <td>@log.Staff.UserName</td>
+                    <td>@log.ClaimedAt.ToString("g")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

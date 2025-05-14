@@ -10,7 +10,7 @@ namespace E_Library.Model
         public Guid Announcement_Id { get; set; } = Guid.NewGuid();
 
         [Required]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         public string Message { get; set; }
 
