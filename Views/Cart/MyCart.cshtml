@@ -1,0 +1,117 @@
+﻿@model List<E_Library.Model.Cart>
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "My Cart";
+
+    int totalBooks = Model.Sum(c => c.Quantity);
+
+    decimal subtotal = 0;
+    foreach (var item in Model)
+    {
+        decimal price = item.Book.Price;
+        if (item.Book.IsOnSale &&
+            item.Book.SaleStartDate <= DateTime.UtcNow &&
+            item.Book.SaleEndDate >= DateTime.UtcNow &&
+            item.Book.DiscountPrice.HasValue)
+        {
+            price = item.Book.DiscountPrice.Value;
+        }
+        subtotal += price * item.Quantity;
+    }
+
+    decimal discount = 0;
+
+    if (totalBooks >= 5)
+        discount += 0.05m;
+
+    // Optional: simulate user's order count (or pass via ViewBag)
+    var totalOrderClaim = User.Claims.FirstOrDefault(c => c.Type == "TotalOrder")?.Value;
+    if (int.TryParse(totalOrderClaim, out int totalOrders) && totalOrders >= 10)
+        discount += 0.10m;
+
+    decimal discountAmount = subtotal * discount;
+    decimal finalTotal = subtotal - discountAmount;
+}
+
+<h2>🛒 My Cart</h2>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Your cart is empty.</div>
+}
+else
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th style="width: 180px;">Quantity</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                decimal price = item.Book.Price;
+                bool isOnSale = item.Book.IsOnSale &&
+                item.Book.SaleStartDate <= DateTime.UtcNow &&
+                item.Book.SaleEndDate >= DateTime.UtcNow &&
+                item.Book.DiscountPrice.HasValue;
+
+                if (isOnSale)
+                    price = item.Book.DiscountPrice.Value;
+
+                <tr>
+                    <td>@item.Book.Title</td>
+                    <td class="text-center">
+                        <form action="/Cart/Decrement" method="post" style="display:inline-block;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookId" value="@item.Book.Book_Id" />
+                            <button class="btn btn-sm btn-outline-secondary">-</button>
+                        </form>
+                        <span class="mx-2">@item.Quantity</span>
+                        <form action="/Cart/Increment" method="post" style="display:inline-block;">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookId" value="@item.Book.Book_Id" />
+                            <button class="btn btn-sm btn-outline-secondary">+</button>
+                        </form>
+                    </td>
+                    <td>
+                        @if (isOnSale)
+                        {
+                            <span><del>@item.Book.Price.ToString("C")</del></span>
+
+                            <br />
+                            <span class="text-success fw-bold">@price.ToString("C")</span>
+                        }
+                        else
+                        {
+                            @price.ToString("C")
+                        }
+                    </td>
+                    <td>@(price * item.Quantity).ToString("C")</td>
+                    <td>
+                        <form action="/Cart/Remove" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookId" value="@item.Book.Book_Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        <p><strong>Subtotal:</strong> @subtotal.ToString("C")</p>
+        <p><strong>Discount:</strong> -@discountAmount.ToString("C")</p>
+        <p><strong>Total:</strong> @finalTotal.ToString("C")</p>
+    </div>
+
+    <form action="/Order/Place" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="btn btn-primary mt-3">✅ Place Order</button>
+    </form>
+}

@@ -2,7 +2,6 @@ using E_Library.Data;
 using E_Library.Dtos;
 using E_Library.Model;
 using E_Library.Services.Interface;
-using E_Library.Entities;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -90,7 +89,6 @@ namespace E_Library.Services
                 Description = bookDto.Description,
                 Price = bookDto.Price,
                 PublishedDate = bookDto.PublishedDate,
-                Stock = bookDto.Stock,
             };
 
             _context.Books.Add(book);

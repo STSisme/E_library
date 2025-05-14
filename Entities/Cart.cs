@@ -1,6 +1,5 @@
-﻿using E_Library.Entities;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace E_Library.Model
 {
@@ -10,15 +9,16 @@ namespace E_Library.Model
         [Key]
         public Guid Cart_Id { get; set; } = Guid.NewGuid();
 
-        [ForeignKey("User_Id")]
-        public string User_Id { get; set; }  // Use string for User_Id to match ApplicationUser.Id
+        [Required]
+        public string User_Id { get; set; }
 
         [Required]
         public Guid Book_Id { get; set; }
 
-        public ApplicationUser User { get; set; } // Corrected type
+        [ForeignKey(nameof(User_Id))]
+        public ApplicationUser User { get; set; }
 
-        [ForeignKey("Book_Id")]
+        [ForeignKey(nameof(Book_Id))]
         public Book Book { get; set; }
 
         public int Quantity { get; set; }

@@ -1,36 +1,64 @@
-﻿<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="/">E-Library</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<E_Library.Model.ApplicationUser> SignInManager
+@inject UserManager<E_Library.Model.ApplicationUser> UserManager
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var tokens = Antiforgery.GetAndStoreTokens(Context);
+    string userRole = "";
+    if (SignInManager.IsSignedIn(User))
+    {
+        var currentUser = await UserManager.GetUserAsync(User);
+        userRole = currentUser?.Role ?? "";
+    }
+}
 
-        <div class="collapse navbar-collapse" id="navbarNav">
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <a class="navbar-brand" href="/">E-Library</a>
+        <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Books/index">Books</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Orders">Orders</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Wishlist/index">Wishlists</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Reviews">Reviews</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/User/Register">Register</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/User/Login">Login</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/Inventories/Index">Inventory</a>
-                </li>
+               
+
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    var currentUser = await UserManager.GetUserAsync(User);
+                    var role = currentUser?.Role;
+
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Admin/Dashboard">Admin Panel</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Admin/Book/Index">📚 Manage Books</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Inventory">📦 Inventory</a></li>
+                    }
+                    else if (role == "Staff")
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Staff/Dashboard">Staff Panel</a></li>
+                    }
+                    else
+                    {
+                        // Only Members see public site
+                        <li class="nav-item"><a class="nav-link" href="/Home/Index">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Books">Books</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Reviews">Reviews</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Order/MyOrders">Orders</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Wishlist/MyWishlist">Wishlist</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/Cart/MyCart">🛒 My Cart</a></li>
+                    }
+
+                    <li class="nav-item">
+                        <form action="/Account/Logout" method="post" class="d-inline">
+                            <input type="hidden" name="__RequestVerificationToken" value="@tokens.RequestToken" />
+                            <button type="submit" class="btn btn-link nav-link" style="display:inline; padding:0;">Logout</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li class="nav-item"><a class="nav-link" href="/Home/Index">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Books">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Account/Register">Register</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Account/Login">Login</a></li>
+                }
 
             </ul>
         </div>

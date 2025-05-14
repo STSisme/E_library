@@ -1,31 +1,22 @@
-﻿using E_Library.Model;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace E_Library.Entities
+namespace E_Library.Model
 {
     public class ApplicationUser : IdentityUser
     {
-
         [Required]
-        public string Username { get; set; }
-
-        [Required]
-        public string Password { get; set; }
-
-        [Required]
-        public string Email { get; set; }
+        public string Username { get; set; }   
 
         public string Role { get; set; } = "Member";
-
-        public string Total_Order { get; set; } = "0";
-
+        public string TotalOrder { get; set; } = "0";
         public bool IsActive { get; set; } = true;
 
-        // Navigation Properties
-        public ICollection<Review> Reviews { get; set; }
-        public ICollection<Cart> Carts { get; set; }
-        public ICollection<Order> Orders { get; set; }
-        public ICollection<Wishlist> Wishlists { get; set; }
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public ICollection<Cart> Carts { get; set; } = new List<Cart>();
+        public ICollection<Order> Orders { get; set; } = new List<Order>(); // Member's own orders
+        public ICollection<Order> ClaimsProcessed { get; set; } = new List<Order>(); // Orders this staff fulfilled
+        public ICollection<Wishlist> Wishlists { get; set; } = new List<Wishlist>();
     }
 }
